@@ -1,0 +1,9 @@
+[
+    {
+        "productUUID": "000100d6bb5c68757a3bdf1e814cddbe",
+        "vendorUUID": "test123",
+        "quantity": 10,
+        "rate": 13.00,
+        "totalCost": 130.00
+    }
+]
