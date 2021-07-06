@@ -1,5 +1,5 @@
 package com.bkenterprises.invoices.service;
 
 public enum IdentifierType {
-    ID, VENDOR
+    ID, VENDOR, MESSAGE_GROUP_ID
 }

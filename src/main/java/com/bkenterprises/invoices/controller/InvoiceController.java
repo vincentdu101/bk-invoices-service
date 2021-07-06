@@ -3,7 +3,9 @@ package com.bkenterprises.invoices.controller;
 import com.bkenterprises.invoices.dao.InvoiceRepository;
 import com.bkenterprises.invoices.model.Invoice;
 import com.bkenterprises.invoices.service.IdentifierType;
+import com.bkenterprises.invoices.service.MessagingService;
 import com.bkenterprises.invoices.service.SecurityService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,9 @@ public class InvoiceController {
     @Autowired
     SecurityService securityService;
 
+    @Autowired
+    MessagingService messagingService;
+
     public InvoiceController(InvoiceRepository invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
     }
@@ -36,10 +41,16 @@ public class InvoiceController {
 
     @PostMapping("/invoices")
     public Invoice createNewInvoice(@RequestBody Invoice newInvoice) {
-        newInvoice.setUUID(securityService.generateUUID(IdentifierType.ID));
-        newInvoice.setCreatedOn(LocalDateTime.now());
-        newInvoice.setModifiedOn(LocalDateTime.now());
-        return invoiceRepository.save(newInvoice);
+        try {
+            newInvoice.setUUID(securityService.generateUUID(IdentifierType.ID));
+            newInvoice.setCreatedOn(LocalDateTime.now());
+            newInvoice.setModifiedOn(LocalDateTime.now());
+            invoiceRepository.save(newInvoice);
+            messagingService.publishInvoice(newInvoice);
+        } catch (JsonProcessingException exception) {
+            System.out.println(exception.getMessage());
+        }
+        return newInvoice;
     }
 
     @GetMapping("/invoices/{id}")
